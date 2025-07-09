@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tech For Girls - Registration</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #111;
+      background-image: url('https://images.unsplash.com/photo-1600880292203-757bb62b4baf');
+      background-size: cover;
+      background-position: center;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .form-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 16px;
+      padding: 40px;
+      width: 100%;
+      max-width: 500px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+      position: relative;
+      z-index: 2;
+      animation: fadeIn 0.8s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .form-card h2 {
+      text-align: center;
+      font-weight: 600;
+      font-size: 28px;
+      margin-bottom: 24px;
+      color: #333;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+      position: relative;
+    }
+
+    .form-group i {
+      position: absolute;
+      top: 50%;
+      left: 16px;
+      transform: translateY(-50%);
+      color: #888;
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 14px 16px 14px 44px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      background: #f9f9f9;
+      transition: border-color 0.3s;
+    }
+
+    .form-group input:focus {
+      border-color: #4a90e2;
+      outline: none;
+      background: #fff;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      font-size: 16px;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.3s;
+    }
+
+    .btn-share {
+      background-color: #25D366;
+      color: white;
+    }
+
+    .btn-share:hover {
+      background-color: #1ebe5d;
+    }
+
+    .btn-submit {
+      background-color: #4a90e2;
+      color: white;
+    }
+
+    .btn-submit:hover {
+      background-color: #357ABD;
+    }
+
+    .status-msg {
+      text-align: center;
+      margin-top: 12px;
+      font-weight: 500;
+      color: green;
+    }
+
+    @media screen and (max-width: 600px) {
+      .form-card {
+        padding: 25px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="form-card">
+    <h2>Join the Tech For Girls Community</h2>
+    <form id="registrationForm">
+      <div class="form-group">
+        <i class="fas fa-user"></i>
+        <input type="text" id="name" placeholder="Full Name" required />
+      </div>
+      <div class="form-group">
+        <i class="fas fa-phone"></i>
+        <input type="number" id="phone" placeholder="Phone Number" required />
+      </div>
+      <div class="form-group">
+        <i class="fas fa-envelope"></i>
+        <input type="email" id="email" placeholder="Email Address" required />
+      </div>
+      <div class="form-group">
+        <i class="fas fa-building"></i>
+        <input type="text" id="college" placeholder="College / Department" required />
+      </div>
+      <div class="form-group">
+        <i class="fas fa-upload"></i>
+        <input type="file" id="screenshot" name="file" required />
+      </div>
+
+      <button type="button" class="btn btn-share" id="shareBtn">📤 Share on WhatsApp</button>
+      <div id="shareStatus" class="status-msg">Click count: 0/5</div>
+      <div id="completeMsg" class="status-msg"></div>
+
+      <button type="submit" class="btn btn-submit">Submit Registration</button>
+    </form>
+    <div class="status-msg" id="finalMsg"></div>
+  </div>
+  <script>
+    const shareBtn = document.getElementById("shareBtn");
+    const shareStatus = document.getElementById("shareStatus");
+    const completeMsg = document.getElementById("completeMsg");
+    const finalMsg = document.getElementById("finalMsg");
+    let shareCount = 0;
+  
+    if (localStorage.getItem("registrationDone") === "true") {
+      disableForm();
+      finalMsg.innerText = "🎉 Your submission has already been recorded.";
+    }
+  
+    shareBtn.onclick = function () {
+      if (shareCount < 5) {
+        shareCount++;
+        window.open("https://wa.me/?text=Hey%20Buddy%20,%20Join%20Tech%20For%20Girls%20Community", "_blank");
+        shareStatus.innerText = `Click count: ${shareCount}/5`;
+        if (shareCount === 5) {
+          completeMsg.innerText = "✅ Sharing complete. Please submit the form.";
+        }
+      }
+    };
+  
+    document.getElementById("registrationForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      if (localStorage.getItem("registrationDone") === "true") return;
+      if (shareCount < 5) {
+        alert("Please complete sharing 5 times before submitting.");
+        return;
+      }
+  
+      const fileInput = document.getElementById("screenshot");
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+  
+      reader.onload = async function () {
+        const base64String = reader.result.split(",")[1];
+  
+        const formData = new FormData();
+        formData.append("name", document.getElementById("name").value);
+        formData.append("phone", document.getElementById("phone").value);
+        formData.append("email", document.getElementById("email").value);
+        formData.append("college", document.getElementById("college").value);
+        formData.append("file", base64String);
+        formData.append("fileName", file.name);
+        formData.append("fileType", file.type);
+  
+        try {
+          const res = await fetch("https://script.google.com/macros/s/AKfycbwXA2ZQsQl20U2oZUSme0OMY8-ivIbk8Jnd1HrH7E8n8mCwnY8pv6PppsXLgLQIZhEH0g/exec", {
+            method: "POST",
+            body: formData
+          });
+          const result = await res.text();
+          if (result.trim() === "success") {
+            localStorage.setItem("registrationDone", "true");
+            disableForm();
+            finalMsg.innerText = "🎉 Your submission has been recorded. Thanks for being part of Tech for Girls!";
+          } else {
+            alert("There was an error submitting: " + result);
+          }
+        } catch (err) {
+          alert("There was an error submitting. " + err.message);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  
+    function disableForm() {
+      document.querySelectorAll("input, button, select").forEach(el => el.disabled = true);
+    }
+  </script>
+</body>
+</html>
